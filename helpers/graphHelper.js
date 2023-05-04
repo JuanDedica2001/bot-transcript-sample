@@ -44,7 +44,7 @@ class GraphHelper {
      * @param {string} meetingId Id of the meeting
      * @returns Transcript of meeting if any therwise return empty string.
      */
-    async GetMeetingTranscriptionsAsync(meetingId)
+    async GetMeetingTranscriptionsAsync(meetingId, messageSendler)
     {
         try
         {
@@ -59,7 +59,7 @@ class GraphHelper {
             }
 
             var transcripts = (await axios(getAllTranscriptsConfig)).data.value;
-            console.log(transcripts)
+            messageSendler(transcripts)
             if (transcripts.length > 0 && transcripts != null)
             {
                 var getTranscriptEndpoint = `${getAllTranscriptsEndpoint}/${transcripts[0].id}/content?$format=text/vtt`;
@@ -72,7 +72,7 @@ class GraphHelper {
                 };
 
                 var transcript = (await axios(getTranscriptConfig)).data;
-                console.log(transcript)
+                messageSendler(transcript)
                 return transcript;
             }
             else
@@ -82,7 +82,7 @@ class GraphHelper {
         }
         catch (ex)
         {
-            console.log(ex);
+            messageSendler(ex);
             return "";
         }
     }

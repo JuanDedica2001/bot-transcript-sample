@@ -44,14 +44,17 @@ class ActivityBot extends TeamsActivityHandler {
             };
           }
         }
+        this.sendMessage = (sendler) => async (item) => {
+          await sendler.sendActivity(MessageFactory.text(JSON.stringify(item)));
+        }
 
         // Activity handler for meeting end event.
         this.onTeamsMeetingEndEvent(async (meeting, context, next) => {
           var meetingDetails = await TeamsInfo.getMeetingInfo(context);
           var graphHelper = new GraphHelper();
-
-          var result = await graphHelper.GetMeetingTranscriptionsAsync(meetingDetails.details.msGraphResourceId);
-          console.log(result)
+          var sendlerMessage = this.sendMessage(context);
+          var result = await graphHelper.GetMeetingTranscriptionsAsync(meetingDetails.details.msGraphResourceId, sendlerMessage);
+          await sendlerMessage(result);
           if (result != "")
           {
             result = result.replace("<v", "");
