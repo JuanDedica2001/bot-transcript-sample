@@ -5,25 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Transcript</title>
     <style>
+        body {
+            width: 100vw;
+        }
         #transcription {
-            white-space: pre-wrap;       /* css-3 */
-            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-            white-space: -pre-wrap;      /* Opera 4-6 */
-            white-space: -o-pre-wrap;    /* Opera 7 */
-            word-wrap: break-word;
-            font-size: 14px;
+            width: 100%;
+            display: flex;
             font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            flex-wrap: wrap;
+            flex-direction: column;
         }
         .pre-container {
-            width: 35rem !important;
+            width: 900px !important;
         }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 0;
+            padding: 10px;
+        }
+        .translated_text {
+            font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: beige;
+            padding: 10px;
+            border-radius: 5px;
+            font-style: italic;
+            color: gray;
+        }
+
     </style>
 </head>
 
 <body>
     <p>Transcription details: </p>
     <div class="pre-container">
-        <pre id="transcription"><%-transcript%></pre>
+        <div id="transcription"><%-transcript%></div>
     </div>
 </body>
 

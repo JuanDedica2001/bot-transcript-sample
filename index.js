@@ -80,7 +80,7 @@ server.get('/home', async (req, res) => {
         var foundIndex = transcriptsDictionary.findIndex((x) => x.id === req.query?.meetingId);
             
         if (foundIndex != -1) {
-            transcript = `Format: ${transcriptsDictionary[foundIndex].data}`;
+            transcript = `${transcriptsDictionary[foundIndex].data}`;
         }
         else {
             var graphHelper = new GraphHelper();
@@ -91,19 +91,21 @@ server.get('/home', async (req, res) => {
                 transcriptsDictionary.push({
                     id: req.query?.meetingId,
                     data: result.map((x) => `
-                    <div class="row">
+                    <div class="container">
                         <i>${x.time}</i>
-                        <div class="row">
-                        <strong>${x.author}</strong> <span>${x.text}</span>
+                        <div class="container">
+                            <strong>${x.author}</strong> <span>${x.text}</span>
+                            <div class="translated_text">${x.translatedText}</div>
                         </div>
                     </div>
                     `).join('')
                 });
                 transcript = `${result.map((x) => `
-                <div class="row">
+                <div class="container">
                     <i>${x.time}</i>
-                    <div class="row">
-                    <strong>${x.author}:</strong> <span>${x.text}</span>
+                    <div class="container">
+                        <strong>${x.author}:</strong> <span>${x.text}</span>
+                        <div class="translated_text">${x.translatedText}</div>
                     </div>
                 </div>
                 `).join('')}`;

@@ -70,6 +70,7 @@ class ActivityBot extends TeamsActivityHandler {
               "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
               "version": "1.5",
               "type": "AdaptiveCard",
+              "minWidth": "800px",
               "body": [
                 {
                   "type": "TextBlock",
@@ -82,6 +83,7 @@ class ActivityBot extends TeamsActivityHandler {
                 {
                   "type": "Action.Submit",
                   "title": "View Transcript",
+                  "minWidth": "800px",  
                   "data": {
                     "msteams": {
                       "type": "task/fetch"

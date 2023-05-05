@@ -1,9 +1,11 @@
 const axios = require('axios');
 const webvtt = require('node-webvtt');
+const { VerbumApiHelper } = require('./VerbumApiHelper');
 require('isomorphic-fetch');
 class GraphHelper {
     constructor() {
         this._token = this.GetAccessToken();
+        this.verbumApi = new VerbumApiHelper();
     }
 
     /**
@@ -93,6 +95,9 @@ class GraphHelper {
         }
         const onlyTimeStamps = cleanText.filter(item => item.includes('--:'));
         const onlyText = cleanText.filter(item => !item.includes('--:'));
+
+        
+
         const parsedResult = onlyTimeStamps.map((item, index) => {
             const [author, text] = onlyText[index].split(': ')
             return {
@@ -101,8 +106,13 @@ class GraphHelper {
                 text,
             };
         })
-        console.log(parsedResult);
-        return parsedResult;
+        const translatedResult = await this.verbumApi.executeTextToText(parsedResult.map(item => item.text).join('*'), 'en');
+        const translatedResultArray = translatedResult.split('*');
+        
+        return parsedResult.map((item, index) => ({
+                ...item,
+                translatedText: translatedResultArray[index],
+            }));
     }
 }
 module.exports = GraphHelper;
