@@ -85,18 +85,32 @@ server.get('/home', async (req, res) => {
         else {
             var graphHelper = new GraphHelper();
             var result = await graphHelper.GetMeetingTranscriptionsAsync(req.query?.meetingId);
+            console.log(result);
+
             if (result != "") {
                 transcriptsDictionary.push({
                     id: req.query?.meetingId,
-                    data: result
+                    data: result.map((x) => `
+                    <div class="row">
+                        <i>${x.time}</i>
+                        <div class="row">
+                        <strong>${x.author}</strong> <span>${x.text}</span>
+                        </div>
+                    </div>
+                    `).join('')
                 });
-
-                transcript = `Format: ${result}`;
+                transcript = `${result.map((x) => `
+                <div class="row">
+                    <i>${x.time}</i>
+                    <div class="row">
+                    <strong>${x.author}:</strong> <span>${x.text}</span>
+                    </div>
+                </div>
+                `).join('')}`;
             }
         }
     }
-
-    res.render('./views/', { transcript: transcript });
+    res.render('./views/', { transcript });
 });
 
 // Listen for incoming activities and route them to your bot main dialog.

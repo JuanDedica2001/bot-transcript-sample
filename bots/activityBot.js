@@ -44,10 +44,7 @@ class ActivityBot extends TeamsActivityHandler {
             };
           }
         }
-        this.sendMessage = (sendler) => async (item) => {
-          await sendler.sendActivity(MessageFactory.text(JSON.stringify(item)));
-        }
-
+        
         // Activity handler for meeting end event.
         this.onTeamsMeetingEndEvent(async (meeting, context, next) => {
           var meetingDetails = await TeamsInfo.getMeetingInfo(context);
@@ -57,7 +54,7 @@ class ActivityBot extends TeamsActivityHandler {
           await sendlerMessage(result);
           if (result != "")
           {
-            result = result.replace("<v", "");
+          //result = result.replace("<v", "");
             var foundIndex = transcriptsDictionary.findIndex((x) => x.id === meetingDetails.details.msGraphResourceId);
             
             if (foundIndex != -1) {
@@ -69,8 +66,6 @@ class ActivityBot extends TeamsActivityHandler {
                 data: result
               });
             }
-            console.log(transcriptsDictionary)
-
             var cardJson = {
               "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
               "version": "1.5",
@@ -101,8 +96,8 @@ class ActivityBot extends TeamsActivityHandler {
           }
           else
           {
-              var notFoundCardJson = {
-                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            var notFoundCardJson = {
+              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
                 "version": "1.5",
                 "type": "AdaptiveCard",
                 "body": [
@@ -115,9 +110,12 @@ class ActivityBot extends TeamsActivityHandler {
                 ]
               };
               
-            await context.sendActivity({ attachments: [CardFactory.adaptiveCard(notFoundCardJson)] });
+              await context.sendActivity({ attachments: [CardFactory.adaptiveCard(notFoundCardJson)] });
           }
         });
+    }
+    sendMessage = (sendler) => async (item) => {
+      await sendler.sendActivity(MessageFactory.text(JSON.stringify(item, null, 2)));
     }
 }
 module.exports.ActivityBot = ActivityBot;

@@ -1,6 +1,6 @@
 const axios = require('axios');
+const webvtt = require('node-webvtt');
 require('isomorphic-fetch');
-
 class GraphHelper {
     constructor() {
         this._token = this.GetAccessToken();
@@ -59,10 +59,10 @@ class GraphHelper {
             }
 
             var transcripts = (await axios(getAllTranscriptsConfig)).data.value;
-            messageSendler(transcripts)
+            messageSendler && messageSendler(transcripts)
             if (transcripts.length > 0 && transcripts != null)
             {
-                var getTranscriptEndpoint = `${getAllTranscriptsEndpoint}/${transcripts[0].id}/content?$format=text/vtt`;
+                var getTranscriptEndpoint = `${getAllTranscriptsEndpoint}/${transcripts[1].id}/content?$format=text/vtt`;
                 const getTranscriptConfig = {
                     method: 'get',
                     url: getTranscriptEndpoint,
@@ -70,10 +70,10 @@ class GraphHelper {
                         'Authorization': `Bearer ${access_Token}`
                     }
                 };
-
+                
                 var transcript = (await axios(getTranscriptConfig)).data;
-                messageSendler(transcript)
-                return transcript;
+                messageSendler && messageSendler(transcript)
+                return this.parseResult(transcript);
             }
             else
             {
@@ -82,10 +82,27 @@ class GraphHelper {
         }
         catch (ex)
         {
-            messageSendler(ex);
+            messageSendler && messageSendler(ex)
             return "";
         }
     }
-
+    async parseResult(text) {
+        const cleanText = text.split('\r\n').filter(item => item != '' && item !== 'WEBVTT');
+        for(let i = 0; i < cleanText.length; i++) {
+            cleanText[i] = cleanText[i].replace('<v ', '').replace('</v>', '').replace('>',': ');
+        }
+        const onlyTimeStamps = cleanText.filter(item => item.includes('--:'));
+        const onlyText = cleanText.filter(item => !item.includes('--:'));
+        const parsedResult = onlyTimeStamps.map((item, index) => {
+            const [author, text] = onlyText[index].split(': ')
+            return {
+                time: item,
+                author,
+                text,
+            };
+        })
+        console.log(parsedResult);
+        return parsedResult;
+    }
 }
 module.exports = GraphHelper;
