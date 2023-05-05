@@ -5,7 +5,7 @@
   "id": "62fbd96b-e663-44c7-94ab-3cfacc2e582f",
   "packageName": "com.microsoft.teams.meetingstranscription",
   "developer": {
-    "name": "Microsoft",
+    "name": "Verbum",
     "websiteUrl": "https://www.microsoft.com",
     "privacyUrl": "https://www.microsoft.com/privacy",
     "termsOfUseUrl": "https://www.microsoft.com/termsofuse"
@@ -15,12 +15,12 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "Meeting Transcript Bot",
-    "full": "Meeting Transcript Bot"
+    "short": "Verbum Transcript Bot",
+    "full": "Verbum Transcript Bot"
   },
   "description": {
-    "short": "Bot to show the transcript of the meeting using Microsoft Graph API.",
-    "full": "This is a sample application which demonstrates how to get Transcript using Graph API and show it in the task module."
+    "short": "The transcript of the meeting using Microsoft Graph API and Verbum SDK.",
+    "full": "This is a sample application which demonstrates how to get Transcript using Graph API and the verbum API for translations, show it in the task module."
   },
   "accentColor": "#235EA5",
   "bots": [

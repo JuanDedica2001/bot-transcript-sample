@@ -16,15 +16,15 @@ class ActivityBot extends TeamsActivityHandler {
         this.handleTeamsTaskModuleFetch = async (context, taskModuleRequest) => {
           try {
             var meetingId = taskModuleRequest.data.meetingId;
-
+            var languageToTranslate = taskModuleRequest.data.language;
             return {
                 "task": {
                     "type": "continue",
                     "value": {
                         "title": "Meeting Transcript",
-                        "height": 600,
-                        "width": 600,
-                        "url": `${process.env.AppBaseUrl}/home?meetingId=${meetingId}`,
+                        "height": 800,
+                        "width": 800,
+                        "url": `${process.env.AppBaseUrl}/home?meetingId=${meetingId}&language=${languageToTranslate}`,
                     },
                 },
             };
@@ -36,8 +36,8 @@ class ActivityBot extends TeamsActivityHandler {
                     "type": "continue",
                     "value": {
                         "title": "Testing",
-                        "height": 600,
-                        "width": 600,
+                        "height": 800,
+                        "width": 800,
                         "url": `${process.env.AppBaseUrl}/home` ,
                     },
                 },
@@ -49,9 +49,8 @@ class ActivityBot extends TeamsActivityHandler {
         this.onTeamsMeetingEndEvent(async (meeting, context, next) => {
           var meetingDetails = await TeamsInfo.getMeetingInfo(context);
           var graphHelper = new GraphHelper();
-          var sendlerMessage = this.sendMessage(context);
-          var result = await graphHelper.GetMeetingTranscriptionsAsync(meetingDetails.details.msGraphResourceId, sendlerMessage);
-          await sendlerMessage(result);
+          var result = await graphHelper.GetMeetingTranscriptionsAsync(meetingDetails.details.msGraphResourceId);
+          //await sendlerMessage(result);
           if (result != "")
           {
           //result = result.replace("<v", "");
@@ -63,14 +62,21 @@ class ActivityBot extends TeamsActivityHandler {
             else {
               transcriptsDictionary.push({
                 id: meetingDetails.details.msGraphResourceId,
-                data: result
+                data: result.map((x) => `
+                <div class="container">
+                    <i>${x.time}</i>
+                    <div class="container">
+                        <strong>${x.author}</strong> <span>${x.text}</span>
+                        <div class="translated_text">${x.translatedText}</div>
+                    </div>
+                </div>
+                `).join('')
               });
             }
             var cardJson = {
               "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
               "version": "1.5",
               "type": "AdaptiveCard",
-              "minWidth": "800px",
               "body": [
                 {
                   "type": "TextBlock",
@@ -82,15 +88,48 @@ class ActivityBot extends TeamsActivityHandler {
               "actions": [
                 {
                   "type": "Action.Submit",
-                  "title": "View Transcript",
-                  "minWidth": "800px",  
+                  "title": "View Transcript: English Translation",
                   "data": {
                     "msteams": {
                       "type": "task/fetch"
                     },
-                    "meetingId": meetingDetails.details.msGraphResourceId
+                    "meetingId": meetingDetails.details.msGraphResourceId,
+                    "language": "en"
                   }
-                }
+                },
+                {
+                  "type": "Action.Submit",
+                  "title": "View Transcript: Italian Translation",
+                  "data": {
+                    "msteams": {
+                      "type": "task/fetch"
+                    },
+                    "meetingId": meetingDetails.details.msGraphResourceId,
+                    "language": "it"
+                  }
+                },
+                {
+                  "type": "Action.Submit",
+                  "title": "View Transcript: German Translation",
+                  "data": {
+                    "msteams": {
+                      "type": "task/fetch"
+                    },
+                    "meetingId": meetingDetails.details.msGraphResourceId,
+                    "language": "de"
+                  }
+                },
+                {
+                  "type": "Action.Submit",
+                  "title": "View Transcript: French Translation",
+                  "data": {
+                    "msteams": {
+                      "type": "task/fetch"
+                    },
+                    "meetingId": meetingDetails.details.msGraphResourceId,
+                    "language": "fr"
+                  }
+                },
               ]
             };
 

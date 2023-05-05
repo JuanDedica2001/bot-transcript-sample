@@ -76,16 +76,16 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 // Returns view to be open in task module.
 server.get('/home', async (req, res) => {
     var transcript = "Transcript not found."
+    var prevLanguage = null;
     if (req.query?.meetingId) {
         var foundIndex = transcriptsDictionary.findIndex((x) => x.id === req.query?.meetingId);
             
-        if (foundIndex != -1) {
+        if (foundIndex !== -1 && req.query?.language === prevLanguage) {
             transcript = `${transcriptsDictionary[foundIndex].data}`;
         }
         else {
             var graphHelper = new GraphHelper();
-            var result = await graphHelper.GetMeetingTranscriptionsAsync(req.query?.meetingId);
-            console.log(result);
+            var result = await graphHelper.GetMeetingTranscriptionsAsync(req.query?.meetingId, req.query?.language);
 
             if (result != "") {
                 transcriptsDictionary.push({
@@ -110,6 +110,7 @@ server.get('/home', async (req, res) => {
                 </div>
                 `).join('')}`;
             }
+            prevLanguage = req.query?.language;
         }
     }
     res.render('./views/', { transcript });

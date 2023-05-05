@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const apiKey = 'deea639f9a49012ada9577105056e490';
+const apiKey = 'd9630c77e9c39a9d828a308ec8eece74';
 const webSocketUrl = 'wss://verbumapi.onemeta.ai:3001/ws/';
 
 
@@ -19,11 +19,16 @@ class VerbumApiHelper {
   }
 
   onError(callback) {
-    this.socket.on('error', callback);
+    this.socket.on('error', 
+      (err) => {
+        console.log(err);
+        callback &&callback(err);
+      }
+    );
   }
 
   async executeTextToText(text, outputLanguage) {
-    console.log({text})
+    console.log({ outputLanguage })
     const dataToSend = `{
       "text": "${text}",
       "languageTo": "${outputLanguage}"
@@ -33,6 +38,7 @@ class VerbumApiHelper {
     return new Promise((resolve) => {
       this.socket.on('message', (data) => {
         const textData = data.toString();
+        console.log(textData);
         resolve(textData);
       });
     });

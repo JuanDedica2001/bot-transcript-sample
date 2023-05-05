@@ -6,6 +6,7 @@ class GraphHelper {
     constructor() {
         this._token = this.GetAccessToken();
         this.verbumApi = new VerbumApiHelper();
+        this.verbumApi.onError();
     }
 
     /**
@@ -46,7 +47,7 @@ class GraphHelper {
      * @param {string} meetingId Id of the meeting
      * @returns Transcript of meeting if any therwise return empty string.
      */
-    async GetMeetingTranscriptionsAsync(meetingId, messageSendler)
+    async GetMeetingTranscriptionsAsync(meetingId, language)
     {
         try
         {
@@ -61,10 +62,9 @@ class GraphHelper {
             }
 
             var transcripts = (await axios(getAllTranscriptsConfig)).data.value;
-            messageSendler && messageSendler(transcripts)
             if (transcripts.length > 0 && transcripts != null)
             {
-                var getTranscriptEndpoint = `${getAllTranscriptsEndpoint}/${transcripts[1].id}/content?$format=text/vtt`;
+                var getTranscriptEndpoint = `${getAllTranscriptsEndpoint}/${transcripts[0].id}/content?$format=text/vtt`;
                 const getTranscriptConfig = {
                     method: 'get',
                     url: getTranscriptEndpoint,
@@ -74,8 +74,7 @@ class GraphHelper {
                 };
                 
                 var transcript = (await axios(getTranscriptConfig)).data;
-                messageSendler && messageSendler(transcript)
-                return this.parseResult(transcript);
+                return this.parseResult(transcript, language);
             }
             else
             {
@@ -84,11 +83,11 @@ class GraphHelper {
         }
         catch (ex)
         {
-            messageSendler && messageSendler(ex)
+            console.log(ex);
             return "";
         }
     }
-    async parseResult(text) {
+    async parseResult(text, language = 'en') {
         const cleanText = text.split('\r\n').filter(item => item != '' && item !== 'WEBVTT');
         for(let i = 0; i < cleanText.length; i++) {
             cleanText[i] = cleanText[i].replace('<v ', '').replace('</v>', '').replace('>',': ');
@@ -106,8 +105,9 @@ class GraphHelper {
                 text,
             };
         })
-        const translatedResult = await this.verbumApi.executeTextToText(parsedResult.map(item => item.text).join('*'), 'en');
+        const translatedResult = await this.verbumApi.executeTextToText(parsedResult.map(item => item.text).join('*'), language);
         const translatedResultArray = translatedResult.split('*');
+        console.log('fue llamado aquí, todo bien aqui igual');
         
         return parsedResult.map((item, index) => ({
                 ...item,
